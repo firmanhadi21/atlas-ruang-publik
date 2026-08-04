@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Ritel Rokok di Sekitar Sekolah — Kota Semarang</title>
+  <meta name="description"
+    content="Peta minimarket penjual rokok di sekitar sekolah di Kota Semarang, dibandingkan dengan radius yang diatur PP 28/2024 (200 m penjualan, 500 m iklan)." />
+  <meta name="theme-color" content="#b4232a" />
+</head>
+<body>
+  <div id="map"></div>
+
+  <button id="toggle" class="toggle-btn" aria-label="Buka/tutup panel">☰</button>
+
+  <section id="panel" class="panel" aria-label="Panel informasi">
+    <header class="panel-head">
+      <h1>Ritel Rokok di Sekitar Sekolah</h1>
+      <p class="sub">Kota Semarang</p>
+    </header>
+
+    <div class="panel-body">
+      <!-- ringkasan diisi oleh main.ts -->
+      <div id="ringkasan" class="stat-block"></div>
+
+      <section class="block">
+        <h2>Aturan (PP 28/2024)</h2>
+        <ul class="rule-list">
+          <li><span class="r r200"></span> <b>200 m</b> — dilarang <b>menjual</b> produk
+            tembakau di sekitar satuan pendidikan</li>
+          <li><span class="r r500"></span> <b>500 m</b> — dilarang <b>mengiklankan</b>
+            produk tembakau</li>
+        </ul>
+        <p class="cite"><b>Pasal 434 ayat (1) huruf e:</b> “dalam radius 200 (dua ratus)
+          meter dari satuan pendidikan dan tempat bermain anak”.<br />
+          <b>Penjelasan Pasal 518 ayat (1), hlm. 570</b> — satu-satunya definisi
+          “satuan pendidikan” dalam PP ini: “<i>antara lain pendidikan anak usia dini,
+          sekolah/madrasah, pesantren, perguruan tinggi, atau nama lain yang sejenis
+          dengan pendidikan formal</i>”.</p>
+        <p class="hint">Karena itu <b>PAUD/TK dan perguruan tinggi ikut dihitung</b> di peta ini.
+          Klik sebuah titik untuk menampilkan kedua radius.</p>
+      </section>
+
+      <section class="block">
+        <h2>Lapisan peta</h2>
+        <label class="toggle"><input type="checkbox" id="l-sekolah" checked />
+          <span>Satuan pendidikan</span></label>
+        <label class="toggle"><input type="checkbox" id="l-toko" checked />
+          <span>Minimarket <span id="toko-n" class="dim"></span></span></label>
+        <label class="toggle"><input type="checkbox" id="l-kec" />
+          <span>Batas kecamatan</span></label>
+      </section>
+
+      <section class="block">
+        <h2>Cari sekolah</h2>
+        <input type="search" id="cari" placeholder="Ketik nama sekolah…"
+          autocomplete="off" aria-label="Cari sekolah" />
+        <ul id="hasil" class="hasil"></ul>
+      </section>
+
+      <section class="block">
+        <h2>Per kecamatan</h2>
+        <table id="tabel-kec" class="kec"></table>
+      </section>
+
+      <section class="block warn">
+        <h2>Catatan penting — mohon dibaca</h2>
+        <ol>
+          <li><b>Kedekatan bukan pelanggaran.</b> Peta ini menunjukkan jarak, bukan
+            penilaian hukum. Penetapan pelanggaran adalah kewenangan pemerintah, dan
+            ketentuan peralihan PP 28/2024 belum diperiksa di sini.</li>
+          <li><b>Jarak diukur antar-titik</b> (titik sekolah ke titik toko), bukan dari
+            batas persil sekolah. Dengan batas persil, angkanya akan <b>lebih besar</b>.</li>
+          <li><b>Data belum lengkap.</b> Lapisan SD/SMP/SMA memuat 805 dari 1.054 satuan
+            pendidikan menurut Dapodik (76,4%); lapisan minimarket diperkirakan ±85% dari
+            jumlah sebenarnya. Angka di sini adalah <b>batas bawah</b>.</li>
+          <li><b>Pesantren belum dipetakan tersendiri</b> (sebagian masuk sebagai madrasah),
+            sehingga angka sebenarnya lebih tinggi.</li>
+          <li><b>Titik minimarket yang ditampilkan lebih sedikit daripada yang dihitung.</b>
+            Perhitungan memakai lapisan terlengkap (949 gerai, sebagian bersumber dari
+            Google Places), tetapi ketentuan lisensi Google tidak mengizinkan penerbitan
+            ulang titik-titiknya. Karena itu peta hanya menampilkan gerai yang bersumber
+            dari OpenStreetMap dan Overture Maps, yang boleh dibagikan kembali.
+            <b>Angka statistik tetap dihitung dari lapisan penuh.</b></li>
+          <li><b>Warung dan toko kelontong belum terhitung.</b> Peta ini hanya memuat
+            minimarket berjaringan. Warung yang menjual rokok jauh lebih banyak dan
+            tidak tersedia di data mana pun — perlu survei lapangan.</li>
+        </ol>
+      </section>
+
+      <section class="block src">
+        <h2>Sumber data</h2>
+        <ul>
+          <li>Sekolah — OpenStreetMap ∪ Dukcapil (Kemendagri), diverifikasi jumlahnya
+            terhadap Dapodik</li>
+          <li>Minimarket — Google Places ∪ Overture Maps ∪ OpenStreetMap</li>
+          <li>Batas wilayah — OpenStreetMap</li>
+        </ul>
+        <p class="meta">Dibuat oleh Firman Hadi · Teknik Geodesi, Universitas Diponegoro<br />
+          Metode dan kode: <a id="repo" href="#" target="_blank" rel="noopener">repositori
+          GitHub</a> · Data per <span id="build"></span></p>
+        <p class="meta">Repositori ini adalah <i>fork</i> dari
+          <a href="https://github.com/shiwaku/japan-food-store-master" target="_blank"
+            rel="noopener">shiwaku/japan-food-store-master</a> — pipeline pemetaan POI toko
+          pangan untuk Jepang. Metode pembangunan basis data, penggabungan sumber, dan
+          verifikasi kelengkapan diadaptasi dari sana untuk konteks Indonesia.</p>
+      </section>
+    </div>
+  </section>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

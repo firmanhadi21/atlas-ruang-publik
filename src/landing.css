@@ -1,0 +1,69 @@
+/* Atlas Ruang Publik のランディング。
+   地図側（style.css）とは別系統の配色にしている: 地図は警告色（赤）を使うが、
+   ランディングは**中立で機関的**な見え方にする。行政に出す資料の入口であり、
+   キャンペーンではなく技術的資料であることを見た目でも示すため。 */
+:root {
+  --bg: #ffffff;
+  --fg: #16191d;
+  --muted: #5c6470;
+  --line: #e2e6ea;
+  --brand: #1f4e79;
+  --brand-soft: #eef3f8;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #14171a; --fg: #e8ecf0; --muted: #98a2ad; --line: #272c32;
+    --brand: #7fb3e0; --brand-soft: #1a2530;
+  }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.65;
+}
+.wrap { max-width: 720px; margin: 0 auto; padding: 0 22px; }
+
+.hero { background: var(--brand-soft); border-bottom: 1px solid var(--line);
+  padding: 46px 0 38px; margin-bottom: 8px; }
+.eyebrow { margin: 0 0 8px; font-size: 12.5px; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--brand); font-weight: 700; }
+.hero h1 { margin: 0; font-size: clamp(28px, 6vw, 40px); line-height: 1.15;
+  letter-spacing: -.02em; }
+.lede { margin: 14px 0 0; font-size: 16px; color: var(--muted); max-width: 56ch; }
+
+main section { padding: 26px 0; border-bottom: 1px solid var(--line); }
+main section:last-child { border-bottom: none; }
+h2 { font-size: 12.5px; text-transform: uppercase; letter-spacing: .07em;
+  color: var(--muted); margin: 0 0 14px; }
+h3 { margin: 4px 0 6px; font-size: 20px; letter-spacing: -.01em; }
+
+.card {
+  display: block; text-decoration: none; color: inherit;
+  border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px;
+  margin-bottom: 14px; transition: border-color .15s, transform .15s;
+}
+a.card:hover { border-color: var(--brand); transform: translateY(-1px); }
+.card-tag { font-size: 11.5px; letter-spacing: .05em; text-transform: uppercase;
+  color: var(--brand); font-weight: 700; }
+.card p { margin: 8px 0 0; font-size: 14.5px; color: var(--muted); }
+.card-stat { color: var(--fg) !important; font-size: 14px !important;
+  padding: 9px 0 0; }
+.card-go { display: inline-block; margin-top: 12px; font-size: 14px;
+  font-weight: 600; color: var(--brand); }
+.card-soon { opacity: .62; }
+
+.method { margin: 0; padding-left: 20px; font-size: 14.5px; }
+.method li { margin-bottom: 9px; }
+.note { font-size: 13.5px; color: var(--muted); background: var(--brand-soft);
+  padding: 12px 14px; border-radius: 9px; margin-top: 16px; }
+
+main p { font-size: 14.5px; }
+a { color: var(--brand); }
+.fork { font-size: 13px; color: var(--muted); margin-top: 16px; }
+
+.foot { padding: 26px 22px 40px; font-size: 13px; color: var(--muted);
+  border-top: 1px solid var(--line); margin-top: 8px; }
+.foot p { margin: 0; }

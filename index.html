@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Atlas Ruang Publik</title>
+  <meta name="description"
+    content="Bukti spasial mengenai ruang publik di Indonesia: apa yang ada di sekitar sekolah, rumah, dan fasilitas umum — diukur dari data terbuka dan diverifikasi terhadap statistik resmi." />
+  <meta name="theme-color" content="#1f4e79" />
+  <link rel="stylesheet" href="/src/landing.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Teknik Geodesi · Universitas Diponegoro</p>
+      <h1>Atlas Ruang Publik</h1>
+      <p class="lede">Apa yang sebenarnya ada di sekitar sekolah, rumah, dan fasilitas umum
+        kita? Atlas ini mengukurnya dari data terbuka, memeriksa kelengkapannya terhadap
+        statistik resmi, dan menyajikannya agar dapat diperiksa siapa pun.</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section>
+      <h2>Studi</h2>
+      <a class="card" href="./rokok-sekolah-semarang/">
+        <div class="card-tag">Kota Semarang · 2026</div>
+        <h3>Ritel Rokok di Sekitar Sekolah</h3>
+        <p>PP 28/2024 melarang penjualan produk tembakau dalam radius 200 m dari satuan
+          pendidikan. Peta ini menunjukkan berapa banyak minimarket yang berada di dalam
+          radius tersebut — dan seberapa dekat sekolah dengan penjual rokok terdekat.</p>
+        <p class="card-stat"><b>79,6%</b> minimarket berada di dalam radius yang dilarang ·
+          median jarak <b>207 m</b></p>
+        <span class="card-go">Buka peta →</span>
+      </a>
+
+      <div class="card card-soon">
+        <div class="card-tag">Rencana</div>
+        <h3>Studi berikutnya</h3>
+        <p>Metode yang sama dapat menjawab pertanyaan lain yang berbentuk “apa yang berada
+          dalam jarak tertentu dari apa”: akses pangan, paparan rob dan banjir, jangkauan
+          puskesmas, atau ruang terbuka hijau.</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Cara kerja</h2>
+      <ol class="method">
+        <li><b>Menyusun lapisan data</b> dari sumber terbuka — OpenStreetMap, Overture Maps,
+          data pemerintah, dan layanan peta pihak ketiga.</li>
+        <li><b>Memeriksa kelengkapannya</b> terhadap statistik resmi. Ini langkah yang paling
+          sering dilewati: data peta hampir selalu tidak lengkap, dan ketidaklengkapannya
+          tidak merata antarwilayah.</li>
+        <li><b>Mengukur jarak</b> terhadap ambang yang diatur peraturan atau yang bermakna
+          bagi warga.</li>
+        <li><b>Menerbitkannya secara terbuka</b>, lengkap dengan batasan datanya, agar
+          temuan dapat diperiksa dan dibantah.</li>
+      </ol>
+      <p class="note">Setiap studi mencantumkan tingkat kelengkapan datanya. Angka yang
+        disajikan umumnya merupakan <b>batas bawah</b> — keadaan sebenarnya cenderung lebih
+        besar, bukan lebih kecil.</p>
+    </section>
+
+    <section>
+      <h2>Keterbukaan</h2>
+      <p>Seluruh kode, data olahan, dan catatan metode tersedia terbuka. Temuan yang keliru
+        lebih baik ditemukan dan diperbaiki daripada dipertahankan.</p>
+      <p><a id="repo" href="#" target="_blank" rel="noopener">Repositori GitHub →</a></p>
+      <p class="fork">Perkakas pembangunan basis data POI dalam atlas ini dikembangkan dari
+        <a href="https://github.com/shiwaku/japan-food-store-master" target="_blank"
+          rel="noopener">shiwaku/japan-food-store-master</a>, sebuah pipeline pemetaan toko
+        pangan untuk Jepang, yang diadaptasi untuk konteks Indonesia.</p>
+    </section>
+  </main>
+
+  <footer class="wrap foot">
+    <p>Firman Hadi · Teknik Geodesi, Universitas Diponegoro, Semarang<br />
+      Diperbarui <span id="build"></span></p>
+  </footer>
+
+  <script type="module" src="/src/landing.ts"></script>
+</body>
+</html>

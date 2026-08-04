@@ -1,0 +1,124 @@
+{
+ "total_sekolah": 2550,
+ "sekolah_dalam_200m": 1210,
+ "persen_sekolah": 47.5,
+ "median_jarak_m": 210,
+ "total_minimarket": 949,
+ "minimarket_dalam_200m": 755,
+ "persen_minimarket": 79.6,
+ "minimarket_ditampilkan": 252,
+ "kecamatan": [
+  {
+   "nama": "Banyumanik",
+   "sekolah": 209,
+   "kena": 94,
+   "persen": 45.0,
+   "toko": 99
+  },
+  {
+   "nama": "Candisari",
+   "sekolah": 115,
+   "kena": 62,
+   "persen": 53.9,
+   "toko": 39
+  },
+  {
+   "nama": "Gajahmungkur",
+   "sekolah": 116,
+   "kena": 70,
+   "persen": 60.3,
+   "toko": 41
+  },
+  {
+   "nama": "Gayamsari",
+   "sekolah": 89,
+   "kena": 49,
+   "persen": 55.1,
+   "toko": 36
+  },
+  {
+   "nama": "Genuk",
+   "sekolah": 163,
+   "kena": 70,
+   "persen": 42.9,
+   "toko": 51
+  },
+  {
+   "nama": "Gunung Pati",
+   "sekolah": 176,
+   "kena": 45,
+   "persen": 25.6,
+   "toko": 49
+  },
+  {
+   "nama": "Mijen",
+   "sekolah": 160,
+   "kena": 68,
+   "persen": 42.5,
+   "toko": 66
+  },
+  {
+   "nama": "Ngaliyan",
+   "sekolah": 186,
+   "kena": 75,
+   "persen": 40.3,
+   "toko": 74
+  },
+  {
+   "nama": "Pedurungan",
+   "sekolah": 277,
+   "kena": 131,
+   "persen": 47.3,
+   "toko": 97
+  },
+  {
+   "nama": "Semarang Barat",
+   "sekolah": 213,
+   "kena": 119,
+   "persen": 55.9,
+   "toko": 88
+  },
+  {
+   "nama": "Semarang Selatan",
+   "sekolah": 122,
+   "kena": 64,
+   "persen": 52.5,
+   "toko": 48
+  },
+  {
+   "nama": "Semarang Tengah",
+   "sekolah": 146,
+   "kena": 111,
+   "persen": 76.0,
+   "toko": 77
+  },
+  {
+   "nama": "Semarang Timur",
+   "sekolah": 128,
+   "kena": 71,
+   "persen": 55.5,
+   "toko": 32
+  },
+  {
+   "nama": "Semarang Utara",
+   "sekolah": 118,
+   "kena": 57,
+   "persen": 48.3,
+   "toko": 40
+  },
+  {
+   "nama": "Tembalang",
+   "sekolah": 262,
+   "kena": 106,
+   "persen": 40.5,
+   "toko": 87
+  },
+  {
+   "nama": "Tugu",
+   "sekolah": 70,
+   "kena": 18,
+   "persen": 25.7,
+   "toko": 25
+  }
+ ]
+}
