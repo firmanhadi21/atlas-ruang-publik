@@ -27,26 +27,63 @@ type Ringkasan = {
 const url = (p: string) => `${import.meta.env.BASE_URL}data/${p}`;
 const nf = (n: number) => n.toLocaleString("id-ID");
 
-// 基図: Carto Positron（無償・APIキー不要・要帰属）。日本版は地理院タイルだが
-// 国外を覆わないため使えない。
+/* ---- 基図 ----
+   日本版は地理院タイルだが国外を覆わないため使えない。無償・APIキー不要・
+   帰属表示だけで使えるものから3種を用意する。
+
+   ★ Google Maps は入れられない。Google Maps Platform の規約は Google のコンテンツを
+     **Google 以外の地図上に表示すること**を禁じており、タイル URL を MapLibre に
+     直接差すのは規約違反になる。合法にやるには Maps JavaScript API に載せ替える必要が
+     あり、そうすると (1) API キーをクライアントに露出、(2) 地図表示ごとに課金＝
+     拡散したときほど請求が増える、(3) データを再配布できず第三者による検証が不可能、
+     という3つの不利益が生じる。行政向けの資料としては割に合わないので採らない。
+     衛星画像が要る用途には Esri World Imagery を代わりに入れている。 */
+type Basemap = { tiles: string[]; attr: string; note: string; maxzoom?: number };
+const BASEMAPS: Record<string, Basemap> = {
+  terang: {
+    tiles: ["a", "b", "c"].map(
+      (s) => `https://${s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png`,
+    ),
+    attr: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · © <a href="https://carto.com/attributions">CARTO</a>',
+    note: "Peta polos — paling mudah membaca titik dan radius.",
+  },
+  detail: {
+    tiles: ["a", "b", "c"].map(
+      (s) => `https://${s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png`,
+    ),
+    attr: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · © <a href="https://carto.com/attributions">CARTO</a>',
+    note: "Menampilkan nama jalan dan tempat — berguna untuk mengenali lokasi.",
+  },
+  satelit: {
+    tiles: [
+      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    ],
+    attr: 'Citra: <a href="https://www.esri.com/">Esri</a>, Maxar, Earthstar Geographics',
+    note: "Citra satelit — untuk memeriksa keadaan sebenarnya di lapangan.",
+    maxzoom: 19,
+  },
+};
+let activeBm = "terang";
+
 const map = new maplibregl.Map({
   container: "map",
   style: {
     version: 8,
-    sources: {
-      carto: {
-        type: "raster",
-        tiles: [
-          "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
-          "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
-          "https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png",
-        ],
-        tileSize: 256,
-        attribution:
-          '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · © <a href="https://carto.com/attributions">CARTO</a>',
-      },
-    },
-    layers: [{ id: "carto", type: "raster", source: "carto" }],
+    sources: Object.fromEntries(
+      Object.entries(BASEMAPS).map(([k, b]) => [
+        `bm-${k}`,
+        { type: "raster", tiles: b.tiles, tileSize: 256, maxzoom: b.maxzoom ?? 20 },
+      ]),
+    ),
+    // ★ setStyle で差し替えず、3枚とも読み込んで visibility を切り替える。
+    //   setStyle だと重ねたレイヤを毎回追加し直す必要があり（日本版の落とし穴）、
+    //   ラスタ↔ラスタなら表示切替のほうが確実で速い。
+    layers: Object.keys(BASEMAPS).map((k) => ({
+      id: `bm-${k}`,
+      type: "raster" as const,
+      source: `bm-${k}`,
+      layout: { visibility: k === activeBm ? ("visible" as const) : ("none" as const) },
+    })),
   },
   center: [110.4229, -6.9932], // Simpang Lima
   zoom: 11.6,
@@ -54,13 +91,19 @@ const map = new maplibregl.Map({
   attributionControl: false,
 });
 map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
-map.addControl(
-  new maplibregl.AttributionControl({
+
+// 帰属は基図ごとに違うので、切り替えのたびに付け替える。
+// （style 内の全ソースの attribution をまとめて出すと、非表示の基図の帰属まで出てしまう）
+let attribCtl: maplibregl.AttributionControl | null = null;
+function setAttribution(bm: string) {
+  if (attribCtl) map.removeControl(attribCtl);
+  attribCtl = new maplibregl.AttributionControl({
     compact: true,
-    customAttribution: "Sekolah: OSM/Dukcapil · Minimarket: Google/Overture/OSM",
-  }),
-  "bottom-right",
-);
+    customAttribution: `${BASEMAPS[bm].attr} · Sekolah: OSM/Dukcapil · Minimarket: Overture/OSM`,
+  });
+  map.addControl(attribCtl, "bottom-right");
+}
+setAttribution(activeBm);
 map.addControl(new maplibregl.ScaleControl({ maxWidth: 110, unit: "metric" }), "bottom-left");
 
 /** 選択した学校の 200m / 500m 円を描くための多角形を作る。
@@ -219,6 +262,33 @@ function wireUI() {
   bind("l-sekolah", ["sekolah"]);
   bind("l-toko", ["toko"]);
   bind("l-kec", ["kec-line"]);
+
+  // 基図切替
+  const note = document.getElementById("bm-note")!;
+  const seg = document.getElementById("basemap")!;
+  const applyBm = (k: string) => {
+    for (const key of Object.keys(BASEMAPS)) {
+      map.setLayoutProperty(`bm-${key}`, "visibility", key === k ? "visible" : "none");
+    }
+    // 衛星画像の上では白フチが見えにくいので、点の縁を濃くする
+    const dark = k === "satelit";
+    map.setPaintProperty("sekolah", "circle-stroke-color", dark ? "#0b0d10" : "#fff");
+    map.setPaintProperty("toko", "circle-stroke-color", dark ? "#0b0d10" : "#fff");
+    map.setPaintProperty("kec-line", "line-color", dark ? "#e8ecf0" : "#8a94a2");
+    activeBm = k;
+    note.textContent = BASEMAPS[k].note;
+    setAttribution(k);
+    seg.querySelectorAll("button").forEach((b) => {
+      const on = b.dataset.bm === k;
+      b.classList.toggle("on", on);
+      b.setAttribute("aria-checked", String(on));
+    });
+  };
+  seg.addEventListener("click", (e) => {
+    const b = (e.target as HTMLElement).closest("button");
+    if (b?.dataset.bm) applyBm(b.dataset.bm);
+  });
+  note.textContent = BASEMAPS[activeBm].note;
 
   // 学校クリック → radius + ポップアップ
   map.on("click", "sekolah", (e) => {
