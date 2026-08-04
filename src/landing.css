@@ -1,7 +1,7 @@
-/* Atlas Ruang Publik のランディング。
-   地図側（style.css）とは別系統の配色にしている: 地図は警告色（赤）を使うが、
-   ランディングは**中立で機関的**な見え方にする。行政に出す資料の入口であり、
-   キャンペーンではなく技術的資料であることを見た目でも示すため。 */
+/* Atlas Ruang Publik landing page.
+   Deliberately a different palette from the map (style.css): the map uses a warning red,
+   the landing stays **neutral and institutional**. It is the front door for material sent
+   to government, and it should look like a technical resource rather than a campaign. */
 :root {
   --bg: #ffffff;
   --fg: #16191d;

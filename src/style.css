@@ -1,7 +1,9 @@
-/* Semarang 公開マップ。日本版ビューアの CSS 変数方式を踏襲するが、
-   用途が QA ツールでなく一般公開の啓発マップなので配色と情報設計は別物にしている。
-   ★ backdrop-filter は使わない（日本版 CLAUDE.md の落とし穴: 内部スクロールを持つ
-     パネルで実 GPU の合成不具合が出る）。背景は不透明にする。 */
+/* Semarang public map. Follows the Japan viewer's CSS-variable approach, but the colour
+   scheme and information design differ because this is a public-facing map rather than a
+   QA tool.
+   ** Do not use backdrop-filter (a pitfall recorded in the Japan CLAUDE.md: real GPUs
+      show compositing artefacts on panels that scroll internally). Keep backgrounds
+      opaque. */
 :root {
   --bg: #ffffff;
   --fg: #1a1c1f;
@@ -30,9 +32,9 @@ body {
 }
 #map { position: absolute; inset: 0; }
 
-/* ---- パネル: デスクトップは全高固定サイドパネル ----
-   top:0 + bottom:0 で全高固定。height:auto にすると内容が画面より低いとき下端が動く
-   （日本版の落とし穴）。 */
+/* ---- Panel: full-height fixed side panel on desktop ----
+   Pinned with top:0 + bottom:0. With height:auto the bottom edge drifts when the content
+   is shorter than the viewport (a Japan-side pitfall). */
 .panel {
   position: absolute; top: 0; bottom: 0; left: 0; width: var(--panel-w);
   background: var(--bg); border-right: 1px solid var(--line);
@@ -56,7 +58,7 @@ body {
 }
 .panel.hidden ~ .toggle-btn { left: 10px; }
 
-/* ---- 見出し統計 ---- */
+/* ---- Headline statistics ---- */
 .stat-block { padding: 14px 0 4px; }
 .stat-big { font-size: 40px; font-weight: 800; line-height: 1; color: var(--accent); }
 .stat-big small { font-size: 20px; font-weight: 700; }
@@ -69,7 +71,7 @@ body {
 .hint { font-size: 12px; color: var(--muted); margin: 6px 0 0; }
 .dim { color: var(--muted); font-weight: 400; font-size: 11.5px; }
 
-/* 基図切替のセグメントボタン */
+/* Basemap segmented control */
 .seg { display: flex; gap: 0; border: 1px solid var(--line); border-radius: 8px;
   overflow: hidden; }
 .seg button {
@@ -80,7 +82,8 @@ body {
 .seg button:last-child { border-right: none; }
 .seg button.on { background: var(--accent); color: #fff; font-weight: 600; }
 .seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
-/* 条文の引用ブロック。行政向けの資料なので出典を目立つ位置に置く。 */
+/* Regulation quotation block. This is material for government, so the source sits
+   somewhere prominent. */
 .cite {
   font-size: 11.5px; line-height: 1.55; color: var(--muted); margin: 8px 0 0;
   padding: 8px 10px; background: var(--accent-soft); border-radius: 6px;
@@ -94,8 +97,8 @@ body {
 .r200 { background: var(--r200); }
 .r500 { background: var(--r500); }
 
-/* ---- トグル: checkbox は必ずラベル内に閉じ込める（パネル外が基準になると
-   フォーカス移動でパネルのスクロールが壊れる。日本版の落とし穴） ---- */
+/* ---- Toggles: the checkbox must stay inside its label. If the focus target sits
+   outside the panel, moving focus breaks the panel's scrolling (a Japan-side pitfall). ---- */
 .toggle { display: flex; align-items: center; gap: 9px; padding: 6px 0;
   font-size: 13.5px; cursor: pointer; position: relative; }
 .toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
@@ -142,7 +145,7 @@ table.kec .bar { display: inline-block; height: 7px; background: var(--accent);
 .src .meta { margin-top: 10px; line-height: 1.6; }
 .src a { color: var(--accent); }
 
-/* ---- ポップアップ ---- */
+/* ---- Popups ---- */
 .maplibregl-popup-content {
   font-family: inherit; padding: 11px 13px; border-radius: 9px; max-width: 260px;
 }
@@ -153,8 +156,8 @@ table.kec .bar { display: inline-block; height: 7px; background: var(--accent);
 .pop-hit { color: #b4232a; }
 .pop-ok { color: #2f7d4f; }
 
-/* ---- モバイル: ボトムシート。畳むときは bottom:0 を明示しないと
-   パネルが画面最上部へ飛ぶ（日本版の落とし穴） ---- */
+/* ---- Mobile: bottom sheet. When collapsing, bottom:0 must be stated explicitly or
+   the panel jumps to the top of the screen (a Japan-side pitfall). ---- */
 @media (max-width: 720px) {
   .panel {
     top: auto; bottom: 0; left: 0; right: 0; width: auto; max-height: 62vh;

@@ -16,28 +16,30 @@ type Ringkasan = {
   total_minimarket: number;
   minimarket_dalam_200m: number;
   persen_minimarket: number;
-  /** 表示できる点の数。Google Places 由来は再配布不可なので統計の母数より少ない。 */
+  /** Points that may be displayed. Fewer than the statistical denominator, because
+   *  Google Places records cannot be redistributed. */
   minimarket_ditampilkan: number;
   kecamatan: { nama: string; sekolah: number; kena: number; persen: number | null; toko: number }[];
 };
 
-// ★ new URL(..., import.meta.url) は使わない。テンプレートリテラルだと Vite が静的解析
-//   できず実行時に **assets/ からの相対**で解決され、data/ が 404 になる（実際に踏んだ）。
-//   BASE_URL はビルド時に base（/food-store-master/semarang/）へ置換される。
+// ** Do not use new URL(..., import.meta.url) here. With a template literal Vite cannot
+//   analyse it statically, so at runtime it resolves **relative to assets/** and data/
+//   404s (this actually happened). BASE_URL is substituted with `base` at build time.
 const url = (p: string) => `${import.meta.env.BASE_URL}data/${p}`;
 const nf = (n: number) => n.toLocaleString("id-ID");
 
-/* ---- 基図 ----
-   日本版は地理院タイルだが国外を覆わないため使えない。無償・APIキー不要・
-   帰属表示だけで使えるものから3種を用意する。
+/* ---- Basemaps ----
+   The Japan viewer uses GSI tiles, which do not cover Indonesia. These three are free,
+   need no API key, and require only attribution.
 
-   ★ Google Maps は入れられない。Google Maps Platform の規約は Google のコンテンツを
-     **Google 以外の地図上に表示すること**を禁じており、タイル URL を MapLibre に
-     直接差すのは規約違反になる。合法にやるには Maps JavaScript API に載せ替える必要が
-     あり、そうすると (1) API キーをクライアントに露出、(2) 地図表示ごとに課金＝
-     拡散したときほど請求が増える、(3) データを再配布できず第三者による検証が不可能、
-     という3つの不利益が生じる。行政向けの資料としては割に合わないので採らない。
-     衛星画像が要る用途には Esri World Imagery を代わりに入れている。 */
+   ** Google Maps cannot be one of them. The Google Maps Platform terms prohibit displaying
+      Google content **on a non-Google map**, so pointing MapLibre at Google tile URLs
+      breaches them. Doing it legitimately means moving to the Maps JavaScript API, which
+      costs three things: (1) an API key exposed client-side, (2) billing per map load, so
+      the bill grows precisely as the map gets shared, and (3) data that cannot be
+      republished, leaving the work unverifiable by third parties. For material aimed at
+      government those are bad trades, so it is not used. Esri World Imagery covers the
+      satellite case instead. */
 type Basemap = { tiles: string[]; attr: string; note: string; maxzoom?: number };
 const BASEMAPS: Record<string, Basemap> = {
   terang: {
@@ -75,9 +77,9 @@ const map = new maplibregl.Map({
         { type: "raster", tiles: b.tiles, tileSize: 256, maxzoom: b.maxzoom ?? 20 },
       ]),
     ),
-    // ★ setStyle で差し替えず、3枚とも読み込んで visibility を切り替える。
-    //   setStyle だと重ねたレイヤを毎回追加し直す必要があり（日本版の落とし穴）、
-    //   ラスタ↔ラスタなら表示切替のほうが確実で速い。
+    // ** All three rasters are loaded and toggled by visibility rather than swapped with
+    //   setStyle. setStyle forces every overlay to be re-added each time (a Japan-side
+    //   pitfall); for raster-to-raster, toggling visibility is more reliable and faster.
     layers: Object.keys(BASEMAPS).map((k) => ({
       id: `bm-${k}`,
       type: "raster" as const,
@@ -92,8 +94,8 @@ const map = new maplibregl.Map({
 });
 map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
 
-// 帰属は基図ごとに違うので、切り替えのたびに付け替える。
-// （style 内の全ソースの attribution をまとめて出すと、非表示の基図の帰属まで出てしまう）
+// Attribution differs per basemap, so it is replaced on each switch. Letting MapLibre
+// aggregate attribution from every source in the style would credit hidden basemaps too.
 let attribCtl: maplibregl.AttributionControl | null = null;
 function setAttribution(bm: string) {
   if (attribCtl) map.removeControl(attribCtl);
@@ -106,8 +108,8 @@ function setAttribution(bm: string) {
 setAttribution(activeBm);
 map.addControl(new maplibregl.ScaleControl({ maxWidth: 110, unit: "metric" }), "bottom-left");
 
-/** 選択した学校の 200m / 500m 円を描くための多角形を作る。
- *  緯度 -7 度の等距円筒近似。Semarang は cos(7°)≒0.9926 なのでほぼ等方。 */
+/** Build the polygon for a selected institution's 200 m / 500 m circles.
+ *  Equirectangular approximation at latitude -7; cos(7 deg) ~ 0.9926, so near-isotropic. */
 function circle(lon: number, lat: number, meters: number): GeoJSON.Feature<GeoJSON.Polygon> {
   const dLat = meters / 111320;
   const dLon = meters / (111320 * Math.cos((lat * Math.PI) / 180));
@@ -136,14 +138,14 @@ map.on("load", async () => {
   map.addSource("sekolah", { type: "geojson", data: sekolah });
   map.addSource("radius", { type: "geojson", data: empty });
 
-  // --- 行政界（既定は非表示） ---
+  // --- District boundaries (hidden by default) ---
   map.addLayer({
     id: "kec-line", type: "line", source: "kec",
     layout: { visibility: "none" },
     paint: { "line-color": "#8a94a2", "line-width": 1, "line-dasharray": [3, 2] },
   });
 
-  // --- 選択した学校の radius（塗り→線の順で店舗より下に置く） ---
+  // --- Selected institution radii (fill then outline, kept beneath the outlets) ---
   map.addLayer({
     id: "radius-500", type: "fill", source: "radius",
     filter: ["==", ["get", "r"], R_ADS],
@@ -162,7 +164,7 @@ map.on("load", async () => {
     },
   });
 
-  // --- ミニマーケット ---
+  // --- Minimarkets ---
   map.addLayer({
     id: "toko", type: "circle", source: "toko",
     paint: {
@@ -174,7 +176,7 @@ map.on("load", async () => {
     },
   });
 
-  // --- 学校: 200m 圏内に店があるものを赤、無いものを緑 ---
+  // --- Institutions: red where an outlet is within 200 m, green where none ---
   map.addLayer({
     id: "sekolah", type: "circle", source: "sekolah",
     paint: {
@@ -250,7 +252,7 @@ function popup(lon: number, lat: number, p: Record<string, unknown>) {
 }
 
 function wireUI() {
-  // レイヤ切替
+  // Layer toggles
   const bind = (id: string, layers: string[]) => {
     const el = document.getElementById(id) as HTMLInputElement;
     el.addEventListener("change", () =>
@@ -263,14 +265,14 @@ function wireUI() {
   bind("l-toko", ["toko"]);
   bind("l-kec", ["kec-line"]);
 
-  // 基図切替
+  // Basemap switching
   const note = document.getElementById("bm-note")!;
   const seg = document.getElementById("basemap")!;
   const applyBm = (k: string) => {
     for (const key of Object.keys(BASEMAPS)) {
       map.setLayoutProperty(`bm-${key}`, "visibility", key === k ? "visible" : "none");
     }
-    // 衛星画像の上では白フチが見えにくいので、点の縁を濃くする
+    // White outlines vanish over satellite imagery, so darken them in that mode
     const dark = k === "satelit";
     map.setPaintProperty("sekolah", "circle-stroke-color", dark ? "#0b0d10" : "#fff");
     map.setPaintProperty("toko", "circle-stroke-color", dark ? "#0b0d10" : "#fff");
@@ -290,7 +292,7 @@ function wireUI() {
   });
   note.textContent = BASEMAPS[activeBm].note;
 
-  // 学校クリック → radius + ポップアップ
+  // Clicking an institution draws its radii and opens a popup
   map.on("click", "sekolah", (e) => {
     const f = e.features?.[0];
     if (!f) return;
@@ -313,7 +315,7 @@ function wireUI() {
     map.on("mouseleave", l, () => (map.getCanvas().style.cursor = ""));
   }
 
-  // 検索
+  // Search
   const cari = document.getElementById("cari") as HTMLInputElement;
   const hasil = document.getElementById("hasil")!;
   cari.addEventListener("input", () => {
@@ -339,7 +341,7 @@ function wireUI() {
       });
   });
 
-  // パネル開閉
+  // Panel open/close
   const panel = document.getElementById("panel")!;
   document.getElementById("toggle")!.addEventListener("click", () =>
     panel.classList.toggle("hidden"),

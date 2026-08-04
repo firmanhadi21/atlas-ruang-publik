@@ -1,10 +1,10 @@
 import { defineConfig } from "vite";
 import { resolve } from "node:path";
 
-// Atlas Ruang Publik。ランディング + studi ごとに1ページ、の多ページ構成。
-// 研究が増えたら input に1行足すだけで済む形にしてある。
-// base はリポジトリ名（GitHub Pages のプロジェクトページ）。独自ドメイン
-// （Undip のサブドメイン等）に移す場合は "/" にする。
+// Atlas Ruang Publik: a landing page plus one page per study.
+// Adding a study means adding one line to `input` below.
+// `base` is the repository name (GitHub Pages project site). Set it to "/" if this moves
+// to a custom domain such as an Undip subdomain.
 export default defineConfig({
   base: "/atlas-ruang-publik/",
   build: {
