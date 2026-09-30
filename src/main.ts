@@ -29,8 +29,13 @@ const url = (p: string) => `${import.meta.env.BASE_URL}data/${p}`;
 const nf = (n: number) => n.toLocaleString("id-ID");
 
 /* ---- Basemaps ----
-   The Japan viewer uses GSI tiles, which do not cover Indonesia. These three are free,
-   need no API key, and require only attribution.
+   The Japan viewer uses GSI tiles, which do not cover Indonesia. These three are free
+   and require attribution.
+
+   ** CARTO tiles need an API key (?key=) or they come back watermarked "API key
+      required". It is read from CARTO_API_KEY in .env (exposed via envPrefix in
+      vite.config.ts) and ends up in the public bundle, as any client-side tile key
+      does, so restrict it to this site's referrer in the CARTO dashboard.
 
    ** Google Maps cannot be one of them. The Google Maps Platform terms prohibit displaying
       Google content **on a non-Google map**, so pointing MapLibre at Google tile URLs
@@ -41,18 +46,21 @@ const nf = (n: number) => n.toLocaleString("id-ID");
       government those are bad trades, so it is not used. Esri World Imagery covers the
       satellite case instead. */
 type Basemap = { tiles: string[]; attr: string; note: string; maxzoom?: number };
+const CARTO_KEY: string = import.meta.env.CARTO_API_KEY ?? "";
+if (!CARTO_KEY) console.warn("CARTO_API_KEY is not set; CARTO basemaps will be watermarked.");
+const cartoTiles = (style: string) =>
+  ["a", "b", "c"].map(
+    (s) =>
+      `https://${s}.basemaps.cartocdn.com/${style}/{z}/{x}/{y}@2x.png?key=${encodeURIComponent(CARTO_KEY)}`,
+  );
 const BASEMAPS: Record<string, Basemap> = {
   terang: {
-    tiles: ["a", "b", "c"].map(
-      (s) => `https://${s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}@2x.png`,
-    ),
+    tiles: cartoTiles("light_all"),
     attr: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · © <a href="https://carto.com/attributions">CARTO</a>',
     note: "Peta polos — paling mudah membaca titik dan radius.",
   },
   detail: {
-    tiles: ["a", "b", "c"].map(
-      (s) => `https://${s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png`,
-    ),
+    tiles: cartoTiles("rastertiles/voyager"),
     attr: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · © <a href="https://carto.com/attributions">CARTO</a>',
     note: "Menampilkan nama jalan dan tempat — berguna untuk mengenali lokasi.",
   },

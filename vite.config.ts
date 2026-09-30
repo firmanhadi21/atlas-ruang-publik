@@ -7,6 +7,8 @@ import { resolve } from "node:path";
 // to a custom domain such as an Undip subdomain.
 export default defineConfig({
   base: "/atlas-ruang-publik/",
+  // Expose CARTO_API_KEY (from .env locally, from a repository secret in CI) to client code.
+  envPrefix: ["VITE_", "CARTO_"],
   build: {
     rollupOptions: {
       input: {
