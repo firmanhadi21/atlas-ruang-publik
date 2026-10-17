@@ -1,0 +1,54 @@
+/* SMK visibility page. Layers on top of style.css: same panel and controls, a teal accent
+   instead of the tobacco study's red, plus the weight sliders, ranking list and popup
+   factor bars. */
+:root {
+  --accent: #1f6f78;
+  --accent-soft: #e7f2f2;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --accent: #5cc4c0; --accent-soft: #152a2b; }
+}
+
+/* ---- Weight sliders ---- */
+.bobot { margin-top: 10px; }
+.slider { display: block; padding: 7px 0; }
+.sl-head { display: flex; justify-content: space-between; font-size: 13px; }
+.sl-head output { color: var(--accent); font-weight: 700; font-variant-numeric: tabular-nums; }
+.sl-desc { display: block; font-size: 11.5px; color: var(--muted); }
+.slider input[type="range"] { width: 100%; margin: 4px 0 2px; accent-color: var(--accent); }
+
+/* Score legend — stops kept in sync with RAMP in smk.ts */
+.legend { margin-top: 10px; }
+.ramp { display: block; height: 9px; border-radius: 5px;
+  background: linear-gradient(90deg, #c2412d 0%, #e79a3c 35%, #e9cf6a 55%, #5fa89a 75%, #1f6f78 100%); }
+.ramp-lab { display: flex; justify-content: space-between; font-size: 11px;
+  color: var(--muted); margin-top: 3px; }
+
+/* ---- Ranking ---- */
+.rank { list-style: none; margin: 0; padding: 0; max-height: 260px; overflow-y: auto;
+  counter-reset: rk; }
+.rank li { display: flex; align-items: center; gap: 8px; padding: 6px 4px;
+  font-size: 12.5px; border-bottom: 1px solid var(--line); cursor: pointer;
+  counter-increment: rk; }
+.rank li::before { content: counter(rk); color: var(--muted); font-size: 11px;
+  min-width: 20px; text-align: right; font-variant-numeric: tabular-nums; }
+.rank li:hover { background: var(--accent-soft); }
+.rk-nama { flex: 1; line-height: 1.3; }
+.rk-nama .j, .hasil .j { display: block; color: var(--muted); font-size: 11px; }
+.rk-skor, .pop-skor span { display: inline-block; min-width: 30px; padding: 2px 0;
+  text-align: center; border-radius: 5px; color: #fff; font-weight: 700;
+  font-variant-numeric: tabular-nums; text-shadow: 0 0 2px rgba(0,0,0,.35); }
+
+/* ---- Popup factor bars ---- */
+.pop-skor { font-size: 12px; color: #555; margin: 8px 0 4px; }
+.pop-skor span { font-size: 15px; padding: 3px 7px; margin-right: 5px; }
+.pop-warn { font-size: 11.5px; line-height: 1.4; color: #8a4b00; background: #fff4e0;
+  border-radius: 5px; padding: 5px 7px; margin: 6px 0 2px; }
+.ring { display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+  border: 3px solid #e79a3c; background: #fff; vertical-align: -1px; margin-right: 4px; }
+.pf { margin-top: 7px; }
+.pf-head { display: flex; justify-content: space-between; font-size: 12px; }
+.pf-track { height: 6px; background: #e6e9ed; border-radius: 3px; overflow: hidden;
+  margin-top: 2px; }
+.pf-track span { display: block; height: 100%; border-radius: 3px; }
+.pf-raw { font-size: 11px; color: #666; margin-top: 1px; }

@@ -14,6 +14,7 @@ export default defineConfig({
       input: {
         landing: resolve(__dirname, "index.html"),
         rokokSekolahSemarang: resolve(__dirname, "rokok-sekolah-semarang/index.html"),
+        smkVisibility: resolve(__dirname, "smk-visibility/index.html"),
       },
     },
   },
