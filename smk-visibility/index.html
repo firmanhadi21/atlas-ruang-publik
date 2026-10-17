@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Visibilitas SMK — Kota Semarang</title>
+  <meta name="description"
+    content="Skor lokasi SMK di Kota Semarang untuk unit produksi dan jasa: jangkauan calon pelanggan, akses jalan utama, kelas jalan di depan gerbang, keramaian komersial, dan angkutan umum." />
+  <meta name="theme-color" content="#1f6f78" />
+</head>
+<body>
+  <div id="map"></div>
+
+  <button id="toggle" class="toggle-btn" aria-label="Buka/tutup panel">☰</button>
+
+  <section id="panel" class="panel" aria-label="Panel informasi">
+    <header class="panel-head">
+      <h1>Visibilitas SMK</h1>
+      <p class="sub">Kota Semarang · lokasi unit produksi &amp; jasa</p>
+    </header>
+
+    <div class="panel-body">
+      <!-- ringkasan diisi oleh smk.ts -->
+      <div id="ringkasan" class="stat-block"></div>
+
+      <section class="block">
+        <h2>Bobot skor</h2>
+        <p class="hint" style="margin:0 0 8px">Skor 0–100 adalah rata-rata berbobot lima
+          faktor. Bobot adalah pilihan, bukan fakta — geser untuk melihat bagaimana
+          peringkat berubah.</p>
+        <div class="seg" id="preset" role="radiogroup" aria-label="Pilihan bobot">
+          <button type="button" data-p="seimbang" class="on" role="radio"
+            aria-checked="true">Seimbang</button>
+          <button type="button" data-p="kendaraan" role="radio"
+            aria-checked="false">Jasa kendaraan</button>
+          <button type="button" data-p="kuliner" role="radio"
+            aria-checked="false">Kuliner &amp; ritel</button>
+        </div>
+        <!-- slider diisi oleh smk.ts -->
+        <div id="bobot" class="bobot"></div>
+      </section>
+
+      <section class="block">
+        <h2>Peta dasar</h2>
+        <div class="seg" id="basemap" role="radiogroup" aria-label="Peta dasar">
+          <button type="button" data-bm="terang" class="on" role="radio"
+            aria-checked="true">Terang</button>
+          <button type="button" data-bm="detail" role="radio"
+            aria-checked="false">Detail</button>
+          <button type="button" data-bm="satelit" role="radio"
+            aria-checked="false">Satelit</button>
+        </div>
+        <p class="hint" id="bm-note"></p>
+      </section>
+
+      <section class="block">
+        <h2>Lapisan peta</h2>
+        <label class="toggle"><input type="checkbox" id="l-smk" checked />
+          <span>SMK, diwarnai menurut skor</span></label>
+        <label class="toggle"><input type="checkbox" id="l-jangkau" checked />
+          <span>Jangkauan 10 menit <span class="dim">— SMK yang dipilih</span></span></label>
+        <label class="toggle"><input type="checkbox" id="l-kec" />
+          <span>Batas kecamatan</span></label>
+        <div class="legend" aria-hidden="true">
+          <span class="ramp"></span>
+          <span class="ramp-lab"><span>0 · nyelempit</span><span>100 · strategis</span></span>
+        </div>
+        <p class="hint"><span class="ring"></span>Titik berongga: lokasi perkiraan
+          <span id="perkiraan-n"></span> — lihat catatan.</p>
+      </section>
+
+      <section class="block">
+        <h2>Cari SMK</h2>
+        <input type="search" id="cari" placeholder="Ketik nama SMK…"
+          autocomplete="off" aria-label="Cari SMK" />
+        <ul id="hasil" class="hasil"></ul>
+      </section>
+
+      <section class="block">
+        <h2>Peringkat <span class="dim" id="rank-n"></span></h2>
+        <ol id="peringkat" class="rank"></ol>
+      </section>
+
+      <section class="block">
+        <h2>Per kecamatan</h2>
+        <table id="tabel-kec" class="kec"></table>
+      </section>
+
+      <section class="block warn">
+        <h2>Catatan penting — mohon dibaca</h2>
+        <ol>
+          <li><b>Skor ini menilai lokasi, bukan sekolah.</b> SMK dengan skor rendah bukan
+            SMK yang buruk; lokasinya saja yang kurang menguntungkan untuk menjual jasa
+            kepada umum. Kualitas layanan, harga, dan promosi tidak diukur.</li>
+          <li><b>Faktor jangkauan dan keramaian bersifat relatif</b> — 100 berarti setara
+            dengan sepersepuluh SMK terbaik di Semarang, bukan ambang mutlak.</li>
+          <li><b>Lokasi diukur dari titik sekolah</b>, bukan dari gerbang atau bengkel unit
+            produksinya. Untuk SMK dengan kampus luas atau gerbang di sisi lain, jarak ke
+            jalan utama bisa berbeda dari kenyataan. “Jalan depan gerbang” adalah jalan
+            terdekat dari titik itu, sehingga sekolah di tengah blok cenderung tercatat
+            di jalan lingkungan.</li>
+          <li><b>Koordinat Dukcapil tidak akurat</b> — dapat meleset 1–3 km dari kampus.
+            Koordinat diambil dari OpenStreetMap atau Overture bila nama sekolahnya
+            cocok; sisanya ditandai sebagai <b>lokasi perkiraan</b> (titik berongga) dan
+            skornya belum dapat dipercaya. Perbaikan titik di OpenStreetMap akan langsung
+            memperbaiki skor pada pembaruan berikutnya.</li>
+          <li><b>Waktu tempuh adalah perkiraan</b> dari kelas jalan OpenStreetMap dengan
+            kecepatan rata-rata sepeda motor di kota; kemacetan jam sibuk tidak dihitung.
+            Warga di wilayah yang jalannya belum dipetakan tidak terhitung, sehingga
+            jangkauan di pinggiran kota cenderung <b>lebih kecil</b> dari sebenarnya.</li>
+          <li><b>Program keahlian belum dibedakan.</b> Bengkel otomotif, tata boga, dan
+            percetakan membutuhkan lokasi yang berbeda — pilihan bobot di atas adalah
+            pendekatan kasar untuk itu.</li>
+          <li><b>Rekomendasi yang realistis bukan memindahkan sekolah</b>, melainkan
+            membuka etalase atau titik layanan unit produksi di lokasi yang strategis.</li>
+        </ol>
+      </section>
+
+      <section class="block src">
+        <h2>Sumber data</h2>
+        <ul>
+          <li>SMK — OpenStreetMap ∪ Dukcapil (Kemendagri), dicocokkan nama dan jarak</li>
+          <li>Jaringan jalan dan halte — OpenStreetMap</li>
+          <li>Penduduk — WorldPop 2020 (100 m, <i>constrained</i>), CC BY 4.0</li>
+          <li>Tempat usaha — Overture Maps</li>
+          <li>Batas wilayah — OpenStreetMap</li>
+        </ul>
+        <p class="meta">Dibuat oleh Firman Hadi · Teknik Geodesi, Universitas Diponegoro<br />
+          Metode dan kode: <a id="repo" href="#" target="_blank" rel="noopener">repositori
+          GitHub</a> · Data per <span id="build"></span></p>
+      </section>
+    </div>
+  </section>
+
+  <script type="module" src="/src/smk.ts"></script>
+</body>
+</html>

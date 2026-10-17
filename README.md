@@ -15,6 +15,7 @@ Disusun oleh **Firman Hadi** · Teknik Geodesi, Universitas Diponegoro, Semarang
 | Studi | Wilayah | Isi |
 |---|---|---|
 | [Ritel Rokok di Sekitar Sekolah](rokok-sekolah-semarang/) | Kota Semarang | Minimarket penjual rokok terhadap radius 200 m (larangan jual) dan 500 m (larangan iklan) menurut **PP 28/2024** |
+| [Visibilitas SMK](smk-visibility/) | Kota Semarang | Skor lokasi SMK untuk unit produksi & jasa: jangkauan calon pelanggan (10 menit), akses jalan arteri/kolektor, kelas jalan di depan gerbang, keramaian komersial, angkutan umum — bobot dapat diatur |
 
 **Temuan utama studi pertama:** **79,6%** minimarket di Kota Semarang berada di dalam radius
 200 m dari satuan pendidikan — radius yang penjualan produk tembakaunya dilarang.
@@ -51,6 +52,9 @@ Data terbitan ada di `public/data/` (GeoJSON + JSON).
 | `minimarket.geojson` | OpenStreetMap ∪ Overture Maps | **ODbL 1.0** / CDLA-Permissive-2.0 |
 | `kecamatan.geojson` | OpenStreetMap | **ODbL 1.0** |
 | `ringkasan.json` | Statistik turunan | Bebas digunakan dengan atribusi |
+| `smk-visibility/smk.geojson` | Dukcapil (nama) + OSM/Overture (koordinat), skor turunan | **ODbL 1.0** (bagian OSM) |
+| `smk-visibility/jangkauan.geojson` | Jaringan jalan OSM + WorldPop 2020 | **ODbL 1.0** |
+| `smk-visibility/ringkasan.json` | Statistik turunan (penduduk: WorldPop, CC BY 4.0) | Bebas digunakan dengan atribusi |
 
 > ⚠️ **Titik minimarket yang diterbitkan lebih sedikit daripada yang dihitung.**
 > Statistik memakai lapisan terlengkap (949 gerai, sebagian bersumber Google Places), tetapi
